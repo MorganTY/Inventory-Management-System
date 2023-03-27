@@ -5,6 +5,7 @@ import com.morgan.inventorymanagement.dao.TransactionRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -69,7 +70,7 @@ public class InventoryManagementService {
                 viewTransactionReport(transactionsList);
                 break;
             case 5:
-                System.out.println("See ya chump");
+                System.out.println("Exiting");
                 input.close();
                 exit(0);
                 break;
@@ -80,9 +81,11 @@ public class InventoryManagementService {
         runInventoryManagementService();
     }
 
+
     private void writeToDb(ArrayList<Item> itemsList, ArrayList<Transaction> transactionsList) {
         itemRepository.saveAll(itemsList);
         transactionRepository.saveAll(transactionsList);
+
     }
 
     private ArrayList<Item> readItemsFromDb() {
@@ -113,7 +116,7 @@ public class InventoryManagementService {
             Item itemToDelete = itemsList.stream().filter(item -> item.getId() == id).collect(Collectors.toList()).get(0);
             Transaction transaction = new Transaction(itemToDelete.getId(), itemToDelete.getDescription(), itemToDelete.getQtyStock(),
                     itemToDelete.getTotalPrice(), 0, "Total sale of stock", Timestamp.from(Instant.now()));
-            itemRepository.delete(itemToDelete);
+            itemRepository.delete(itemToDelete); //removing item from arraylist
             itemsList.remove(itemToDelete);
             return transaction;
         } catch (Exception e) {
@@ -342,4 +345,5 @@ public class InventoryManagementService {
         }
         return id;
     }
+
 }
